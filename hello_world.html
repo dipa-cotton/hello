@@ -1,33 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Simple Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diya's cool website ehehehe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
-        body {
+        body, html {
+            margin: 0;
+            padding: 0;
             background-color: black;
+            font-family: 'Pacifico', cursive;
             color: white;
+        }
+        body {
+            min-height: 1000vh; /* Make the body taller to accommodate more boxes */
+        }
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .center-box {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 48px;
+            z-index: 2;
+            transition: top 0.3s ease-out, opacity 0.3s ease-out;
+        }
+        .bunny {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            z-index: 100;
+        }
+        .bunny-body {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+        }
+        .bunny-ear {
+            position: absolute;
+            bottom: 40px;
+            width: 15px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50% 50% 0 0;
+        }
+        .bunny-ear.left {
+            left: 10px;
+            transform: rotate(-10deg);
+        }
+        .bunny-ear.right {
+            right: 10px;
+            transform: rotate(10deg);
+        }
+        .bunny-eye {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background-color: black;
+            border-radius: 50%;
+            bottom: 30px;
+        }
+        .bunny-eye.left {
+            left: 15px;
+        }
+        .bunny-eye.right {
+            right: 15px;
         }
     </style>
 </head>
 <body>
-    <h1 id="greeting" style="text-align: center;">Hello, World!</h1>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    <div class="stars"></div>
+    <div class="center-box" id="box-0">hi</div>
+    <div class="center-box" id="box-1">welcome to my website!</div>
+    <div class="center-box" id="box-2">scroll down for more!</div>
+    <div class="center-box" id="box-3">isn't this cool?</div>
+    <div class="center-box" id="box-4">keep going!</div>
+    <div class="center-box" id="box-5">you're doing great!</div>
+    <div class="center-box" id="box-6">almost there!</div>
+    <div class="center-box" id="box-7">just a bit more...</div>
+    <div class="center-box" id="box-8">almost at the end!</div>
+    <div class="center-box" id="box-9">you made it!</div>
+    <div class="bunny">
+        <div class="bunny-body"></div>
+        <div class="bunny-ear left"></div>
+        <div class="bunny-ear right"></div>
+        <div class="bunny-eye left"></div>
+        <div class="bunny-eye right"></div>
+    </div>
+
     <script>
-        function rainConfetti() {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
+        const stars = [];
+        const starCount = 100;
+        const boxCount = 10;
+
+        function generateStars() {
+            const starContainer = document.querySelector('.stars');
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                starContainer.appendChild(star);
+                stars.push({
+                    element: star,
+                    speed: Math.random() * 0.5 + 0.1,
+                    y: Math.random() * 100
+                });
+            }
+        }
+
+        function updateStars(scrollY) {
+            stars.forEach(star => {
+                star.y -= star.speed * (scrollY - (star.lastScrollY || 0)) * 0.02;
+                if (star.y < -10) {
+                    star.y = 110;
+                } else if (star.y > 110) {
+                    star.y = -10;
+                }
+                star.element.style.top = `${star.y}%`;
+                star.lastScrollY = scrollY;
             });
         }
 
+        function askUsername() {
+            let username = prompt("Please enter your name:");
+            if (username) {
+                document.getElementById('box-0').textContent = `hi, ${username}`;
+            }
+        }
+
+        function handleScroll() {
+            const scrollPosition = window.scrollY;
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollPercentage = scrollPosition / maxScroll;
+
+            for (let i = 0; i < boxCount; i++) {
+                const box = document.getElementById(`box-${i}`);
+                const boxScrollStart = i / boxCount;
+                const boxScrollEnd = (i + 1) / boxCount;
+                const boxScrollProgress = (scrollPercentage - boxScrollStart) / (boxScrollEnd - boxScrollStart);
+
+                if (boxScrollProgress >= 0 && boxScrollProgress <= 1) {
+                    const topPercentage = 100 + (50 - boxScrollProgress * 100);
+                    box.style.top = `${topPercentage}%`;
+                    box.style.opacity = boxScrollProgress;
+                } else if (boxScrollProgress > 1) {
+                    box.style.top = '50%';
+                    box.style.opacity = Math.max(0, 1 - (boxScrollProgress - 1));
+                } else {
+                    box.style.top = '150%';
+                    box.style.opacity = 0;
+                }
+            }
+
+            updateStars(scrollPosition);
+        }
+
         document.addEventListener('DOMContentLoaded', (event) => {
-            rainConfetti();
+            generateStars();
+            askUsername();
+            handleScroll(); // Initial call to set the correct position
         });
+
+        window.addEventListener('scroll', handleScroll);
     </script>
 </body>
-    <script src="ask_username.js"></script>
-    <script>
-        askUsername();
-    </script>
 </html>
